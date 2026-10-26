@@ -1,0 +1,43 @@
+# Dependances
+node_modules/
+
+# Sorties de build
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+.sass-cache/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# Tests / couverture
+coverage/
+libpeerconnection.log
+testem.log
+typings/
+
+# Variables d'environnement et secrets
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+
+# IDE et editeurs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.history/
+*.sublime-workspace
+*.launch
+
+# Systeme
+.DS_Store
+Thumbs.db
