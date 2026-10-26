@@ -1,0 +1,24 @@
+services:
+  back:
+    build:
+      context: ./back
+    ports:
+      - "8364:3000"
+    environment:
+      PORT: 3000
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - db_network
+    restart: unless-stopped
+
+networks:
+  db_network:
+    name: db_network
+    driver: bridge
