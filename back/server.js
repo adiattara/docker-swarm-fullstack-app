@@ -1,7 +1,8 @@
 const express = require('express');
+const fs = require('node:fs');
 const app = express();
 const cors = require('cors');
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: true,
@@ -10,27 +11,32 @@ const corsOptions = {
 
 app.options('*', cors()) // include before other routes
 app.use(cors(corsOptions));
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+app.use(express.json());
 
 const { Pool } = require('pg');
 
-const pool = new Pool({
-  user: 'fullstack_user',
-  host: 'localhost',
-  database: 'fullstack',
-  password: 'fullstack_password',
-  port: 5432,
-});
+const poolConfig = {
+  user: process.env.PGUSER || 'fullstack_user',
+  host: process.env.PGHOST || 'localhost',
+  database: process.env.PGDATABASE || 'fullstack',
+  port: parseInt(process.env.PGPORT, 10) || 5432,
+};
 
-pool.connect((err) => {
-  if (err) {
-    console.error('Error connecting to PostgreSQL:', err);
-  } else {
-    console.log('Connected to PostgreSQL');
-  }
+if (process.env.PGPASSWORD_FILE) {
+  poolConfig.password = fs.readFileSync(process.env.PGPASSWORD_FILE, 'utf8').trim();
+} else {
+  poolConfig.password = process.env.PGPASSWORD || 'fullstack_password';
+}
+
+const pool = new Pool(poolConfig);
+
+pool.query('SELECT 1').then(
+  () => console.log('Connected to PostgreSQL'),
+  (err) => console.error('Error connecting to PostgreSQL:', err)
+);
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 app.get('/api/items', (req, res) => {
@@ -45,11 +51,11 @@ app.get('/api/items', (req, res) => {
 });
 
 app.post('/api/items', (req, res) => {
-  const { name, description } = req.body;
+  const { description } = req.body;
 
   pool.query(
-    'INSERT INTO items (name, description) VALUES ($1, $2) RETURNING *',
-    [name, description],
+    'INSERT INTO items (description) VALUES ($1) RETURNING *',
+    [description],
     (err, result) => {
       if (err) {
         console.error('Error executing query:', err);
@@ -63,11 +69,11 @@ app.post('/api/items', (req, res) => {
 
 app.put('/api/items/:id', (req, res) => {
   const { id } = req.params;
-  const { name, description } = req.body;
+  const { description } = req.body;
 
   pool.query(
-    'UPDATE items SET name = $1, description = $2 WHERE id = $3 RETURNING *',
-    [name, description, id],
+    'UPDATE items SET description = $1 WHERE id = $2 RETURNING *',
+    [description, id],
     (err, result) => {
       if (err) {
         console.error('Error executing query:', err);
@@ -98,4 +104,8 @@ app.delete('/api/items/:id', (req, res) => {
       }
     }
   );
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
