@@ -1,4 +1,4 @@
-# 🍄 ShroomStack
+# 🐳 DockerSwarmStack
 
 > **A fullstack playground, containerised from zero to Docker Swarm.**
 
@@ -9,7 +9,7 @@
 [![Docker Swarm](https://img.shields.io/badge/Swarm-orchestrated-1D63ED?logo=docker&logoColor=white)](https://docs.docker.com/engine/swarm/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**ShroomStack** is a deliberately small fullstack application — a mushroom catalogue — used as a realistic
+**DockerSwarmStack** is a deliberately small fullstack application — a mushroom catalogue — used as a realistic
 support to learn and demonstrate **containerisation and orchestration**: Postgres in a container, Compose
 stacks, secrets, multi-stage builds, an nginx-served Angular bundle, a private registry, a production stack,
 and rolling updates with rollback on **Docker Swarm**.
@@ -23,7 +23,7 @@ Small surface, full lifecycle. 🚀
 
 ## ✨ Why another fullstack app?
 
-Because deploying is where most tutorials stop. ShroomStack keeps the business logic trivial (one table,
+Because deploying is where most tutorials stop. DockerSwarmStack keeps the business logic trivial (one table,
 four endpoints) so the focus stays on **what actually matters in production**:
 
 - 🔐 **No secret in the image** — database passwords injected through Docker secrets
@@ -83,7 +83,7 @@ Key rules:
 **1. Database**
 
 ```sh
-docker run -d --name shroom-pg \
+docker run -d --name dockerswarmstack-pg \
   -e POSTGRES_USER=fullstack_user \
   -e POSTGRES_PASSWORD=fullstack_password \
   -e POSTGRES_DB=fullstack \
