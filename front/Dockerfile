@@ -21,8 +21,9 @@ COPY --chown=node:node . .
 
 EXPOSE 1234
 
-# --host 0.0.0.0 makes the server reachable from outside the container.
-CMD ["npx", "ng", "serve", "--port", "1234", "--host", "0.0.0.0", "--watch", "false"]
+# --host 0.0.0.0 makes the server reachable from outside the container,
+# --proxy-config forwards /api to the back like nginx does in production.
+CMD ["npx", "ng", "serve", "--port", "1234", "--host", "0.0.0.0", "--watch", "false", "--proxy-config", "proxy.conf.json"]
 
 # Stage 3: serve the static build with nginx. Node and the sources stay out
 # of this image: only the 300 kB produced by the build stage are copied in.
