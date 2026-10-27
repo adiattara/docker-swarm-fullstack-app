@@ -15,7 +15,15 @@ FROM deps AS build
 COPY --chown=node:node . .
 RUN npx ng build --configuration=production
 
-# Stage 2: development server, used by compose.dev.yml until step 6 is over.
+# Stage 2: serve the static build with nginx. Node and the sources stay out
+# of this image: only the 300 kB produced by the build stage are copied in.
+FROM nginx:alpine AS prod
+COPY --from=build /usr/src/app/dist/front/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+
+# Stage 3: development server. Kept last on purpose: Docker builds the final
+# stage unless `target` says otherwise, and compose.dev.yml still expects dev.
 FROM deps AS dev
 COPY --chown=node:node . .
 
