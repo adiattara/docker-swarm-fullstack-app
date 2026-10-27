@@ -26,6 +26,9 @@ services:
   front:
     build:
       context: ./front
+      # The Dockerfile's last stage is the nginx production image; dev keeps
+      # ng serve by targeting its own stage.
+      target: dev
     ports:
       - "${FRONT_PORT:-4200}:1234"
     depends_on:
