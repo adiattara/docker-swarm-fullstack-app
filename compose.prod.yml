@@ -4,10 +4,6 @@ services:
   back:
     build:
       context: ./back
-    ports:
-      # Temporary: the Angular build still calls http://localhost:8364/api.
-      # Removed once nginx proxies /api through front-back.
-      - "8364:3000"
     environment:
       PORT: 3000
       PGHOST: db
