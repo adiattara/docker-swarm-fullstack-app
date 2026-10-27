@@ -2,7 +2,22 @@ const express = require('express');
 const fs = require('node:fs');
 const app = express();
 const cors = require('cors');
-const port = process.env.PORT || 3000;
+
+// Configuration comes from the environment only: no hardcoded defaults, so a
+// container with an incomplete configuration fails at boot instead of
+// silently falling back to localhost and a shared password.
+function requireEnv(name) {
+  const value = process.env[name];
+
+  if (!value) {
+    console.error(`${name} is not set; refusing to start with an incomplete configuration.`);
+    process.exit(1);
+  }
+
+  return value;
+}
+
+const port = requireEnv('PORT');
 
 const corsOptions = {
   origin: true,
@@ -16,19 +31,21 @@ app.use(express.json());
 const { Pool } = require('pg');
 
 const poolConfig = {
-  user: process.env.PGUSER || 'fullstack_user',
-  host: process.env.PGHOST || 'localhost',
-  database: process.env.PGDATABASE || 'fullstack',
-  port: parseInt(process.env.PGPORT, 10) || 5432,
+  user: requireEnv('PGUSER'),
+  host: requireEnv('PGHOST'),
+  database: requireEnv('PGDATABASE'),
+  port: parseInt(requireEnv('PGPORT'), 10),
 };
 
-if (process.env.PGPASSWORD_FILE) {
-  poolConfig.password = fs.readFileSync(process.env.PGPASSWORD_FILE, 'utf8').trim();
-} else {
-  poolConfig.password = process.env.PGPASSWORD || 'fullstack_password';
-}
+// The database password only ever comes from a Docker secret: Docker mounts
+// it as a read-only file and points PGPASSWORD_FILE at it. No env fallback,
+// no hardcoded default, so a missing secret fails at startup instead of
+// silently connecting with a password nobody controls.
+//
+// trim() strips the trailing newline left by some editors.
+const password = fs.readFileSync(requireEnv('PGPASSWORD_FILE'), 'utf8').trim();
 
-const pool = new Pool(poolConfig);
+const pool = new Pool({ ...poolConfig, password });
 
 pool.query('SELECT 1').then(
   () => console.log('Connected to PostgreSQL'),
