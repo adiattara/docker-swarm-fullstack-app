@@ -17,7 +17,7 @@ export class MyComponentComponent implements OnInit {
   }
 
   getItems(): void {
-    this.http.get<any[]>('http://localhost:8364/api/items').subscribe(
+    this.http.get<any[]>('/api/items').subscribe(
       (response) => {
         this.items = response;
       },
