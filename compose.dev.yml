@@ -9,7 +9,7 @@ services:
       PGHOST: db
       PGPORT: 5432
       PGUSER: ${POSTGRES_USER}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGPASSWORD_FILE: /run/secrets/db_password   # ← remplace PGPASSWORD
       PGDATABASE: ${POSTGRES_DB}
     depends_on:
       db:
@@ -17,6 +17,9 @@ services:
     networks:
       - db_network
     restart: unless-stopped
+
+    secrets:
+      - db_password
 
 networks:
   db_network:
