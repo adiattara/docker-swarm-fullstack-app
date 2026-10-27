@@ -1,0 +1,45 @@
+# Production stack: pair with compose.pg.yml
+#   docker compose -f compose.pg.yml -f compose.prod.yml up -d --build
+services:
+  back:
+    build:
+      context: ./back
+    environment:
+      PORT: 3000
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD_FILE: /run/secrets/db_password
+      PGDATABASE: ${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - back-pg
+      - front-back
+    restart: unless-stopped
+
+    secrets:
+      - db_password
+
+  front:
+    build:
+      context: ./front
+      # Last stage of the Dockerfile: nginx serving the static build.
+      target: prod
+    ports:
+      - "${FRONT_PORT:-4200}:80"
+    depends_on:
+      back:
+        condition: service_healthy
+    networks:
+      - front-back
+    restart: unless-stopped
+
+networks:
+  front-back:
+    name: front-back
+    driver: bridge
+  back-pg:
+    name: back-pg
+    driver: bridge
