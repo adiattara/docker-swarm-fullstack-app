@@ -9,7 +9,7 @@ services:
 #   Setup the username, password, and database name. You can changes these values.
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password   # ← remplace POSTGRES_PASSWORD
       POSTGRES_DB: ${POSTGRES_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
 #   Maps port 54320 (localhost) to port 5432 on the container. You can change the ports to fix your needs.
@@ -31,6 +31,9 @@ services:
     networks:
       - db_network
 
+    secrets:
+      - db_password
+
 volumes:
   data:
     driver: local
@@ -39,3 +42,6 @@ networks:
   db_network:
     name: db_network
     driver: bridge
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
