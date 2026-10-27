@@ -7,10 +7,11 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: db
     networks:
-      - db_network
+      # Adminer is a database client: it belongs on the same network as db.
+      - back-pg
     restart: always
 
 networks:
-  db_network:
-    name: db_network
+  back-pg:
+    name: back-pg
     driver: bridge

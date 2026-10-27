@@ -15,13 +15,31 @@ services:
       db:
         condition: service_healthy
     networks:
-      - db_network
+      # Reaches the database on back-pg, the front on front-back.
+      - back-pg
+      - front-back
     restart: unless-stopped
 
     secrets:
       - db_password
 
+  front:
+    build:
+      context: ./front
+    ports:
+      - "${FRONT_PORT:-4200}:1234"
+    depends_on:
+      back:
+        condition: service_healthy
+    networks:
+      # Front and database never share a network.
+      - front-back
+    restart: unless-stopped
+
 networks:
-  db_network:
-    name: db_network
+  front-back:
+    name: front-back
+    driver: bridge
+  back-pg:
+    name: back-pg
     driver: bridge

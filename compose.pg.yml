@@ -29,7 +29,7 @@ services:
       - data:/var/lib/postgresql
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - db_network
+      - back-pg
 
     secrets:
       - db_password
@@ -39,8 +39,8 @@ volumes:
     driver: local
 
 networks:
-  db_network:
-    name: db_network
+  back-pg:
+    name: back-pg
     driver: bridge
 secrets:
   db_password:
