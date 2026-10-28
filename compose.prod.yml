@@ -65,7 +65,7 @@ services:
         parallelism: 1
 
   front:
-    image: ghcr.io/adiattara/docker-swarm-fullstack-app/front:1.0.0
+    image: ghcr.io/adiattara/docker-swarm-fullstack-app/front:1.0.1
     ports:
       - "${FRONT_PORT:-4200}:80"
     depends_on:
