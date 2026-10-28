@@ -90,11 +90,7 @@ volumes:
 
 networks:
   front-back:
-    name: front-back
-    driver: bridge
   back-pg:
-    name: back-pg
-    driver: bridge
 
 secrets:
   db_password:
