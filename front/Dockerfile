@@ -32,3 +32,8 @@ FROM nginx:alpine AS prod
 COPY --from=build /usr/src/app/dist/front/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
+
+# `Up` only proves nginx was started, not that it serves pages: ask for the
+# index from inside the container and let Docker track the answer.
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 --start-period=5s \
+  CMD wget -qO- http://127.0.0.1/ > /dev/null || exit 1
